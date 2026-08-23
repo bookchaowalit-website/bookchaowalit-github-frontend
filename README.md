@@ -1,14 +1,14 @@
-# GitHub Highlights
+# Repository Reading Room
 
-Pin repositories to showcase.
+A curated local shelf for repositories worth opening.
 
 ## Features
-- CRUD list
-- Search
-- localStorage
+- Curated repository index with selectable reading context
+- Lens filters and search by name, role, owner, or language
+- Local add/remove records with a proof line and GitHub link
 
 ## Limitations
-- Local only
+- Local only; no GitHub API or remote metrics
 
 ## Run
 ```bash

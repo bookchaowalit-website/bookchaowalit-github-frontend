@@ -1,46 +1,53 @@
-# bookchaowalit-github-frontend — Product brief
+# Product
 
-**Slug:** `bookchaowalit-website/bookchaowalit-github-frontend`  
-**Generated:** 2026-08-11 (bulk Book Dev closeout)  
-**Status:** starter / portfolio boundary
+<!-- impeccable:product-schema 1 -->
 
-## Purpose
+## Platform
 
-Portfolio repository under Book Dev. This brief records ownership and the
-current honest status so the nested tree is not an empty shell in the task
-system.
+web
 
-## Runnable path
+## Users
 
-See `README.md` for install and run instructions when present.
+Hiring managers, collaborators, and clients browsing a personal code portfolio who need to understand why a repository matters before opening it.
 
-## Limits
+## Product Purpose
 
-- Not claimed as production-ready unless README and tests prove it.
-- Mobile smoke / emulator acceptance is separate and toolchain-dependent.
+Repository Reading Room turns a short, curated set of repositories into an inspectable code shelf. Success means a visitor can scan the collection, understand each repository's role, and choose one meaningful artifact to explore without wading through a generic link list.
 
-## Source README excerpt
+## Positioning
 
-```
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This is a personal repository shelf organized around context and contribution, not a mirror of GitHub's activity feed. Each record explains the artifact's place in the larger system and can be edited locally as the portfolio evolves.
 
-## Getting Started
+## Operating Context
 
-First, run the development server:
+The app is a browser-only portfolio demonstration. It starts with one honest local record, supports search and lens filtering, and stores changes in this browser. It must remain useful with no GitHub API, account, or network-backed repository metadata.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Capabilities and Constraints
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Show a curated repository index with role, owner, status, language, and a short reason to inspect.
+- Search and filter the shelf without losing the selected repository context.
+- Add and remove local records with clear feedback.
+- Do not invent stars, contributors, traffic, or production claims.
+- Keep a readable fallback for an empty shelf and a no-match search.
+- Open decision: whether a future version should import verified metadata from GitHub.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Brand Commitments
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize an
-```
+- The product name may appear publicly as Repository Reading Room while the repository remains `bookchaowalit-github-frontend`.
+- Copy should be concise, evidence-first, and personal without sounding like a resume dump.
+
+## Evidence on Hand
+
+- Existing implementation: `app/page.tsx`, `app/globals.css`, and `app/layout.tsx`.
+- The starter contains one real local example, `solo-empire`; no remote GitHub metrics are available to display.
+
+## Product Principles
+
+- Context before click.
+- Curate a shelf; do not mirror a feed.
+- Every claim must be editable or visibly local.
+- Let the artifact, not the interface chrome, carry the proof.
+
+## Accessibility & Inclusion
+
+Use semantic navigation and lists, visible keyboard focus, buttons with explicit labels, sufficient contrast, touch-safe controls, and a reduced-motion alternative for selection transitions.

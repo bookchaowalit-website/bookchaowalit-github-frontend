@@ -1,7 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+type GithubRepository = {
+  name: string;
+  description: string | null;
+  language: string | null;
+  stargazers_count: number;
+  forks_count: number;
+  updated_at: string;
+  html_url: string;
+};
+
+type GithubCommit = {
+  sha: string;
+  commit?: {
+    message?: string;
+    author?: { name?: string; date?: string };
+  };
+  html_url: string;
+};
+
+type GithubPullRequest = {
+  number: number;
+  title: string;
+  user?: { login?: string };
+  state: string;
+  created_at: string;
+  updated_at: string;
+  html_url: string;
+};
+
 export async function POST(request: NextRequest) {
-  let requestId: number | string = 0;
+  const requestId: number | string = 0;
 
   try {
     const body = await request.json();
@@ -155,12 +184,12 @@ async function getRepos(username: string, sort?: string, per_page?: number) {
     throw new Error(`GitHub API error: ${response.statusText}`);
   }
 
-  const repos = await response.json();
+  const repos = await response.json() as GithubRepository[];
 
   return {
     username,
     count: repos.length,
-    repositories: repos.map((r: any) => ({
+    repositories: repos.map((r) => ({
       name: r.name,
       description: r.description,
       language: r.language,
@@ -185,14 +214,14 @@ async function getCommits(username: string, repo: string, branch?: string, per_p
     throw new Error(`GitHub API error: ${response.statusText}`);
   }
 
-  const commits = await response.json();
+  const commits = await response.json() as GithubCommit[];
 
   return {
     username,
     repo,
     branch: branch || 'main',
     count: commits.length,
-    commits: commits.map((c: any) => ({
+    commits: commits.map((c) => ({
       sha: c.sha,
       message: c.commit?.message,
       author: c.commit?.author?.name,
@@ -214,10 +243,10 @@ async function getLanguages(username: string) {
     throw new Error(`GitHub API error: ${response.statusText}`);
   }
 
-  const repos = await response.json();
+  const repos = await response.json() as GithubRepository[];
   const languages: Record<string, number> = {};
 
-  repos.forEach((r: any) => {
+  repos.forEach((r) => {
     if (r.language) {
       languages[r.language] = (languages[r.language] || 0) + 1;
     }
@@ -244,14 +273,14 @@ async function getPullRequests(username: string, repo: string, state?: string, p
     throw new Error(`GitHub API error: ${response.statusText}`);
   }
 
-  const prs = await response.json();
+  const prs = await response.json() as GithubPullRequest[];
 
   return {
     username,
     repo,
     state: state || 'open',
     count: prs.length,
-    pull_requests: prs.map((pr: any) => ({
+    pull_requests: prs.map((pr) => ({
       number: pr.number,
       title: pr.title,
       author: pr.user?.login,

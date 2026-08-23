@@ -1,197 +1,248 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState, type FormEvent } from "react";
+import Link from "next/link";
 
-function Shell({
-  title,
-  subtitle,
-  badge = "Portfolio demo · local-only",
-  children,
-}: {
-  title: string;
-  subtitle: string;
-  badge?: string;
-  children: ReactNode;
-}) {
-  return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-900 dark:bg-black dark:text-zinc-100">
-      <div className="mx-auto max-w-6xl px-4 py-10">
-        <header className="mb-8">
-          <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">{badge}</p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight">{title}</h1>
-          <p className="mt-2 max-w-2xl text-sm text-zinc-600 dark:text-zinc-400">{subtitle}</p>
-        </header>
-        {children}
-        <footer className="mt-10 border-t border-zinc-200 pt-4 text-xs text-zinc-500 dark:border-zinc-800">
-          Honest demo: no multi-tenant backend. State (if any) stays in this browser.
-        </footer>
-      </div>
-    </div>
-  );
+type Lens = "all" | "systems" | "tools" | "portfolio";
+
+type Repository = {
+  id: string;
+  name: string;
+  owner: string;
+  role: string;
+  description: string;
+  language: string;
+  status: "Pinned" | "Active" | "Draft";
+  lens: Exclude<Lens, "all">;
+  proof: string;
+  url: string;
+};
+
+const seedRepositories: Repository[] = [
+  {
+    id: "solo-empire",
+    name: "solo-empire",
+    owner: "bookchaowalit",
+    role: "Operating system",
+    description: "A personal control plane for projects, knowledge, tasks, and durable operating context.",
+    language: "TypeScript · Python",
+    status: "Pinned",
+    lens: "systems",
+    proof: "The system this shelf is part of",
+    url: "https://github.com/bookchaowalit/solo-empire",
+  },
+  {
+    id: "devhub",
+    name: "bookchaowalit-devhub-frontend",
+    owner: "bookchaowalit-website",
+    role: "API developer portal",
+    description: "A catalog and browser playground for MCP servers exposed by the portfolio ecosystem.",
+    language: "Next.js · TypeScript",
+    status: "Active",
+    lens: "tools",
+    proof: "An interface for exploring developer capability",
+    url: "https://github.com/bookchaowalit-website/bookchaowalit-devhub-frontend",
+  },
+  {
+    id: "analytics",
+    name: "bookchaowalit-analytics-dashboard-frontend",
+    owner: "bookchaowalit-website",
+    role: "Signal reading instrument",
+    description: "A local surface for reading a performance trace without pretending to be a connected analytics SaaS.",
+    language: "Next.js · TypeScript",
+    status: "Active",
+    lens: "portfolio",
+    proof: "A product-specific interface, not a starter dashboard",
+    url: "https://github.com/bookchaowalit-website/bookchaowalit-analytics-dashboard-frontend",
+  },
+];
+
+const lensLabels: Record<Lens, string> = {
+  all: "All records",
+  systems: "Systems",
+  tools: "Tools",
+  portfolio: "Portfolio pieces",
+};
+
+const blankDraft = {
+  name: "",
+  owner: "",
+  role: "",
+  description: "",
+  language: "",
+  url: "",
+};
+
+function makeId(name: string) {
+  return `${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`;
 }
-
-function Button({
-  children,
-  onClick,
-  variant = "primary",
-  disabled,
-  type = "button",
-  className = "",
-}: {
-  children: ReactNode;
-  onClick?: () => void;
-  variant?: "primary" | "secondary" | "ghost" | "danger";
-  disabled?: boolean;
-  type?: "button" | "submit";
-  className?: string;
-}) {
-  const base =
-    "inline-flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 " +
-    className;
-  const styles =
-    variant === "primary"
-      ? "bg-zinc-900 text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900"
-      : variant === "secondary"
-        ? "bg-white text-zinc-900 ring-1 ring-zinc-200 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-100 dark:ring-zinc-700"
-        : variant === "danger"
-          ? "bg-red-600 text-white hover:bg-red-500"
-          : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900";
-  return (
-    <button type={type} disabled={disabled} onClick={onClick} className={`${base} ${styles}`}>
-      {children}
-    </button>
-  );
-}
-
-const inputClass =
-  "w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm outline-none ring-zinc-400 focus:ring-2 dark:border-zinc-700 dark:bg-zinc-950";
-
-function useLocalStorage<T>(key: string, initial: T) {
-  const [value, setValue] = useState<T>(initial);
-  const [ready, setReady] = useState(false);
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(key);
-      if (raw != null) setValue(JSON.parse(raw) as T);
-    } catch {
-      /* ignore */
-    }
-    setReady(true);
-  }, [key]);
-  useEffect(() => {
-    if (!ready) return;
-    localStorage.setItem(key, JSON.stringify(value));
-  }, [key, value, ready]);
-  return [value, setValue] as const;
-}
-
-function uid() {
-  return crypto.randomUUID();
-}
-
-async function copyText(text: string) {
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-
-type Item = { id: string; title: string; body: string; status: string; createdAt: number };
-
-const SEED: Item[] = [{"title": "solo-empire", "body": "Personal OS monorepo", "status": "Pinned"}].map((x: any, i: number) => ({
-  id: String(x.id ?? i + 1),
-  title: x.title,
-  body: x.body,
-  status: x.status,
-  createdAt: x.createdAt ?? Date.now() - i * 86400000,
-}));
-
-const FIELDS = [{"key": "title", "label": "Title", "type": "text"}, {"key": "body", "label": "Details", "type": "textarea"}, {"key": "status", "label": "Status", "type": "select", "options": ["Draft", "Active", "Done"]}] as { key: "title" | "body" | "status"; label: string; type: string; options?: string[] }[];
 
 export default function Home() {
-  const [items, setItems] = useLocalStorage<Item[]>("github-pins-v1", SEED);
+  const [repositories, setRepositories] = useState(seedRepositories);
+  const [lens, setLens] = useState<Lens>("all");
   const [query, setQuery] = useState("");
-  const [draft, setDraft] = useState<Record<string, string>>(() =>
-    Object.fromEntries(FIELDS.map((f) => [f.key, f.options?.[0] ?? ""]))
-  );
+  const [selectedId, setSelectedId] = useState(seedRepositories[0].id);
+  const [draft, setDraft] = useState(blankDraft);
+  const [copied, setCopied] = useState(false);
 
-  const filtered = items.filter((it) =>
-    (it.title + it.body + it.status).toLowerCase().includes(query.toLowerCase())
-  );
+  const filtered = useMemo(() => {
+    const normalized = query.trim().toLowerCase();
+    return repositories.filter((repository) => {
+      const matchesLens = lens === "all" || repository.lens === lens;
+      const haystack = `${repository.name} ${repository.owner} ${repository.role} ${repository.description} ${repository.language}`.toLowerCase();
+      return matchesLens && (!normalized || haystack.includes(normalized));
+    });
+  }, [lens, query, repositories]);
 
-  const add = () => {
-    if (!String(draft.title || "").trim()) return;
-    setItems((prev) => [
-      {
-        id: uid(),
-        title: draft.title || "",
-        body: draft.body || "",
-        status: draft.status || "",
-        createdAt: Date.now(),
-      },
-      ...prev,
-    ]);
-    setDraft(Object.fromEntries(FIELDS.map((f) => [f.key, f.options?.[0] ?? ""])));
-  };
+  const selected = filtered.find((repository) => repository.id === selectedId) ?? filtered[0] ?? null;
+
+  function updateDraft(field: keyof typeof blankDraft, value: string) {
+    setDraft((current) => ({ ...current, [field]: value }));
+  }
+
+  function addRepository(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!draft.name.trim() || !draft.role.trim()) return;
+    const repository: Repository = {
+      id: makeId(draft.name),
+      name: draft.name.trim(),
+      owner: draft.owner.trim() || "Unspecified owner",
+      role: draft.role.trim(),
+      description: draft.description.trim() || "A repository saved for a closer look.",
+      language: draft.language.trim() || "Not recorded",
+      status: "Draft",
+      lens: "tools",
+      proof: "A local record waiting for evidence",
+      url: draft.url.trim() || "#",
+    };
+    setRepositories((current) => [repository, ...current]);
+    setSelectedId(repository.id);
+    setDraft(blankDraft);
+  }
+
+  async function copyRecord() {
+    if (!selected) return;
+    try {
+      await navigator.clipboard.writeText(`${selected.name} — ${selected.role}\n${selected.description}`);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
+    } catch {
+      setCopied(false);
+    }
+  }
+
+  function removeRepository(id: string) {
+    setRepositories((current) => current.filter((repository) => repository.id !== id));
+    if (selectedId === id) setSelectedId(filtered.find((repository) => repository.id !== id)?.id ?? "");
+  }
 
   return (
-    <Shell title="GitHub Highlights" subtitle="Pin repositories to showcase.">
-      <div className="mb-4 flex flex-wrap gap-2">
-        <input className={`${inputClass} max-w-sm`} placeholder="Search" value={query} onChange={(e) => setQuery(e.target.value)} />
-        <span className="self-center text-sm text-zinc-500">{filtered.length} items</span>
-      </div>
-      <div className="mb-6 grid gap-2 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950 md:grid-cols-2">
-        {FIELDS.map((f) => (
-          <label key={f.key} className="block space-y-1">
-            <span className="text-xs font-medium text-zinc-500">{f.label}</span>
-            {f.type === "textarea" ? (
-              <textarea
-                className={`${inputClass} min-h-[72px]`}
-                value={draft[f.key] || ""}
-                onChange={(e) => setDraft((d) => ({ ...d, [f.key]: e.target.value }))}
-              />
-            ) : f.type === "select" ? (
-              <select
-                className={inputClass}
-                value={draft[f.key] || ""}
-                onChange={(e) => setDraft((d) => ({ ...d, [f.key]: e.target.value }))}
-              >
-                {(f.options || []).map((o) => (
-                  <option key={o}>{o}</option>
-                ))}
-              </select>
-            ) : (
-              <input
-                className={inputClass}
-                value={draft[f.key] || ""}
-                onChange={(e) => setDraft((d) => ({ ...d, [f.key]: e.target.value }))}
-              />
-            )}
+    <main className="reading-room">
+      <div className="room-frame">
+        <header className="room-header">
+          <Link className="room-mark" href="/" aria-label="Repository Reading Room home">
+            <span className="room-mark-dot" aria-hidden="true" />
+            <span>Repository Reading Room</span>
+          </Link>
+          <span className="room-location">Bookchaowalit · GitHub shelf</span>
+        </header>
+
+        <section className="room-intro" aria-labelledby="page-title">
+          <div>
+            <h1 id="page-title">A shelf of things worth opening.</h1>
+            <p>Curated repository records with enough context to choose the next artifact, not another scroll through a link dump.</p>
+          </div>
+          <div className="shelf-count">
+            <strong>{String(repositories.length).padStart(2, "0")}</strong>
+            <span>records<br />on this shelf</span>
+          </div>
+        </section>
+
+        <div className="room-toolbar">
+          <label className="search-line">
+            <span>Find a record</span>
+            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Name, role, or language" />
           </label>
-        ))}
-        <div className="md:col-span-2">
-          <Button onClick={add}>Add</Button>
+          <div className="lens-list" aria-label="Filter repository records" role="group">
+            {(Object.keys(lensLabels) as Lens[]).map((key) => (
+              <button key={key} type="button" className={lens === key ? "lens-button is-active" : "lens-button"} aria-pressed={lens === key} onClick={() => setLens(key)}>
+                {lensLabels[key]}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
-      <ul className="space-y-2">
-        {filtered.map((it) => (
-          <li key={it.id} className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
-            <div className="flex flex-wrap items-start justify-between gap-2">
-              <div>
-                <div className="font-medium">{it.title}</div>
-                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{it.body}</p>
-                <span className="mt-2 inline-block rounded-full bg-zinc-100 px-2 py-0.5 text-xs dark:bg-zinc-900">{it.status}</span>
-              </div>
-              <Button variant="ghost" onClick={() => setItems((prev) => prev.filter((x) => x.id !== it.id))}>
-                Delete
-              </Button>
+
+        <div className="shelf-layout">
+          <aside className="index-panel" aria-label="Repository index">
+            <div className="index-heading">
+              <span>Index</span>
+              <span>{filtered.length} shown</span>
             </div>
-          </li>
-        ))}
-      </ul>
-    </Shell>
+            {filtered.length > 0 ? (
+              <ol className="index-list">
+                {filtered.map((repository, index) => (
+                  <li key={repository.id}>
+                    <button type="button" className={selected?.id === repository.id ? "index-row is-selected" : "index-row"} onClick={() => setSelectedId(repository.id)}>
+                      <span className="index-number">{String(index + 1).padStart(2, "0")}</span>
+                      <span className="index-name">{repository.name}</span>
+                      <span className="index-role">{repository.role}</span>
+                    </button>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p className="empty-index">No records match this shelf view.</p>
+            )}
+            <details className="add-record">
+              <summary>Place a new record</summary>
+              <form onSubmit={addRepository}>
+                <label>Name<input value={draft.name} onChange={(event) => updateDraft("name", event.target.value)} required /></label>
+                <label>Owner<input value={draft.owner} onChange={(event) => updateDraft("owner", event.target.value)} /></label>
+                <label>Role<input value={draft.role} onChange={(event) => updateDraft("role", event.target.value)} required /></label>
+                <label>Language<input value={draft.language} onChange={(event) => updateDraft("language", event.target.value)} /></label>
+                <label>Why inspect it?<textarea value={draft.description} onChange={(event) => updateDraft("description", event.target.value)} rows={3} /></label>
+                <label>GitHub URL<input type="url" value={draft.url} onChange={(event) => updateDraft("url", event.target.value)} placeholder="https://github.com/..." /></label>
+                <button className="submit-record" type="submit">Add to shelf</button>
+              </form>
+            </details>
+          </aside>
+
+          <section className="record-stage" aria-live="polite" aria-label="Selected repository">
+            {selected ? (
+              <article className="record-sheet">
+                <div className="record-topline">
+                  <span>{selected.status}</span>
+                  <span>{selected.lens}</span>
+                </div>
+                <p className="record-owner">{selected.owner}</p>
+                <h2>{selected.name}</h2>
+                <p className="record-role">{selected.role}</p>
+                <p className="record-description">{selected.description}</p>
+                <div className="record-proof">
+                  <span>Proof line</span>
+                  <strong>{selected.proof}</strong>
+                </div>
+                <dl className="record-meta">
+                  <div><dt>Language</dt><dd>{selected.language}</dd></div>
+                  <div><dt>Record</dt><dd>{selected.status === "Draft" ? "Local draft" : "Curated shelf item"}</dd></div>
+                </dl>
+                <div className="record-actions">
+                  <a href={selected.url} target="_blank" rel="noreferrer">Open repository <span aria-hidden="true">↗</span></a>
+                  <button type="button" onClick={copyRecord}>{copied ? "Record copied" : "Copy record"}</button>
+                  <button type="button" className="remove-action" onClick={() => removeRepository(selected.id)}>Remove</button>
+                </div>
+              </article>
+            ) : (
+              <div className="empty-stage"><p>Nothing is on this shelf view yet.</p><span>Change the lens or place a new record from the index.</span></div>
+            )}
+          </section>
+        </div>
+
+        <footer className="room-footer">
+          <span>Local shelf · no GitHub API connection</span>
+          <span>Context before click.</span>
+        </footer>
+      </div>
+    </main>
   );
 }
