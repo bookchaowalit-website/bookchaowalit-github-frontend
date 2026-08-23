@@ -14,18 +14,18 @@ colors:
   alert-strong: "#f0a27c"
 typography:
   display:
-    fontFamily: "Geist, Arial, sans-serif"
+    fontFamily: "Space Grotesk, Arial, sans-serif"
     fontSize: "clamp(3.2rem, 8vw, 7.2rem)"
     fontWeight: 580
     lineHeight: 0.88
     letterSpacing: "-0.085em"
   body:
-    fontFamily: "Geist, Arial, sans-serif"
+    fontFamily: "Space Grotesk, Arial, sans-serif"
     fontSize: "1rem"
     fontWeight: 400
     lineHeight: 1.65
   data:
-    fontFamily: "Geist Mono, SFMono-Regular, Consolas, monospace"
+    fontFamily: "Space Mono, SFMono-Regular, Consolas, monospace"
     fontSize: "0.7rem"
     fontWeight: 400
     lineHeight: 1.4
@@ -85,11 +85,11 @@ The palette is a nocturnal archive: dark enough to let a repository name lead, w
 
 ## Typography
 
-**Display Font:** Geist (with Arial, sans-serif)
+**Display Font:** Space Grotesk (with Arial, sans-serif)
 
-**Body Font:** Geist (with Arial, sans-serif)
+**Body Font:** Space Grotesk (with Arial, sans-serif)
 
-**Label/Mono Font:** Geist Mono (with SFMono-Regular, Consolas, monospace)
+**Label/Mono Font:** Space Mono (with SFMono-Regular, Consolas, monospace)
 
 **Character:** Large sans type gives the shelf a confident public voice. Mono labels turn owner, role, lens, and proof into quiet catalog metadata.
 

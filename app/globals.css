@@ -12,8 +12,9 @@
   --signal-ink: #1e2b18;
   --alert: #e38b61;
   --alert-strong: #f0a27c;
-  --font-body: var(--font-geist-sans), Arial, sans-serif;
-  --font-data: var(--font-geist-mono), "SFMono-Regular", Consolas, monospace;
+  --font-display: var(--font-space-grotesk), Arial, sans-serif;
+  --font-body: var(--font-space-grotesk), Arial, sans-serif;
+  --font-data: var(--font-space-mono), "SFMono-Regular", Consolas, monospace;
 }
 
 @theme inline {
@@ -129,6 +130,7 @@ textarea:focus-visible {
   font-weight: 580;
   letter-spacing: -0.085em;
   line-height: 0.88;
+  font-family: var(--font-display);
 }
 
 .room-intro p {
@@ -411,6 +413,7 @@ textarea:focus-visible {
   font-weight: 580;
   letter-spacing: -0.075em;
   line-height: 0.95;
+  font-family: var(--font-display);
 }
 
 .record-role {
